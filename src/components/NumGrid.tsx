@@ -24,8 +24,6 @@ const NumGrid = ({ cellSize }: Props) => {
                             key={`${ri}-${ci}`}
                             cellPos={model.pos}
                             cellSize={cellSize}
-                            borderWidth={borderWidth}
-                            borderColor={borderColor}
                         />
                     ))}
                 </HStack>

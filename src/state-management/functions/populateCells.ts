@@ -2,49 +2,18 @@ import { GridPos, NumCellModel } from "../../components/NumCell";
 import { GridDim } from "../../components/NumGrid";
 import { OperatorType } from "../../models/operators";
 import {
-    getMultiOperands,
     NumberOperand,
 } from "../../util_functions/get_multi_operands";
+import { getOperands } from "../../util_functions/get_operands";
 import { shuffle } from "../../util_functions/shuffle_array";
 
-const maxNum = 20;
 
-const getMaxPairs = (dim: GridDim): number => {
+const getNumsNeeded = (dim: GridDim): number | undefined => {
     const { rows, cols } = dim;
     const totalSlots = rows * cols;
-    const evenSlotsCount = totalSlots % 2 ? totalSlots - 1 : totalSlots;
+    if (totalSlots <= 2) return undefined;
 
-    if (evenSlotsCount === 0) return 0;
-
-    const maxPairs = evenSlotsCount / 2;
-    return maxPairs;
-};
-
-const getNumberOperandSet = (
-    maxPairs: number,
-    operator: OperatorType
-): [NumberOperand, number[]] => {
-    // TODO every operator has constraints
-    // define a function to that gets `n` random unique numbers based on
-    // operators constraints
-
-    // TODO sometimes, there's more than two cells that make up the answer
-    const mainNumbers = getNumbersAddConstraint(maxPairs);
-
-    const numberOperands = getMultiOperands(mainNumbers, operator);
-    shuffle(numberOperands);
-
-    const mainOperand = numberOperands[0];
-
-    // operands can contain duplicates
-    const allOperandsUnique = new Set(
-        numberOperands.flatMap((op) => op.operands)
-    );
-    const allOperands = Array.from(allOperandsUnique);
-
-    // return [mainOperand, allOperands];
-
-    return [{num: 4, operands: [2, 2]}, [2, 2]];
+    return totalSlots;
 };
 
 export const populateCells = (
@@ -53,9 +22,9 @@ export const populateCells = (
 ): [NumCellModel[][], NumberOperand?, OperatorType?] => {
     // TODO make selection random
     const operator = OperatorType.Addition;
-    const maxPairs = getMaxPairs(dim);
+    const numsNeeded = getNumsNeeded(dim);
 
-    if (maxPairs === 0) {
+    if (!numsNeeded) {
         console.log(`grid doesn't have enough cells to place operands`);
         return [cells];
     }
@@ -63,43 +32,43 @@ export const populateCells = (
     // using that random operator
     // get `n` number of operands
     // such that `n` < grid_rows * grid_cols
-    const [mainOperand, allOperands] = getNumberOperandSet(maxPairs, operator);
+    const numberOperand = getOperands(operator, numsNeeded);
+    if (!numberOperand) {
+        console.log("could not populate grid");
+    
+        return [cells, undefined, undefined];
+    }
 
+    
+    
+    const allGridPositions: GridPos[] = getShuffledGridPositions(cells);
+    
     const clonedCells: NumCellModel[][] = cells.map((row) =>
         row.map((cell) => ({ ...cell }))
     );
 
-    const allGridPositions: GridPos[] = [];
-
-    for (let ri = 0; ri < clonedCells.length; ri++) {
-        const row = clonedCells[ri];
-        for (let ci = 0; ci < row.length; ci++) {
-            allGridPositions.push({ ri, ci });
-        }
-    }
-    shuffle(allGridPositions);
-
-    while (allOperands.length > 0 && allGridPositions.length > 0) {
+    const allNumbers = numberOperand?.allNumbers;
+    while (allNumbers.length > 0 && allGridPositions.length > 0) {
         const { ri, ci } = allGridPositions.pop()!;
-        const op = allOperands.pop();
+        const op = allNumbers.pop();
 
         clonedCells[ri][ci].num = op;
     }
 
-    return [clonedCells, mainOperand, operator];
+    return [clonedCells, numberOperand, operator];
 };
 
-const getNumbersAddConstraint = (count: number): number[] => {
-    const uniqueNumbers = new Set<number>();
 
-    while (uniqueNumbers.size < count) {
-        // Math.random() generates a number between 0 (inclusive) and 1 (exclusive)
-        const randomValue = Math.random() * maxNum;
-        // Math.floor(randomValue) converts the scaled value to an integer between 0 and 98 (inclusive)
-        const randomNum = Math.floor(randomValue) + 2;
 
-        uniqueNumbers.add(randomNum);
+const getShuffledGridPositions = (cells: NumCellModel[][]): GridPos[] => {
+    const positions = []
+    for (let ri = 0; ri < cells.length; ri++) {
+        const row = cells[ri];
+        for (let ci = 0; ci < row.length; ci++) {
+            positions.push({ ri, ci });
+        }
     }
 
-    return Array.from(uniqueNumbers);
-};
+    shuffle(positions)
+    return positions;
+}
