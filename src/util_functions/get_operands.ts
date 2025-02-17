@@ -23,7 +23,7 @@ export const getOperands = (
         }
         default: {
             console.log("operator type not found");
-            return
+            return;
         }
     }
 };
@@ -47,18 +47,20 @@ const getAdditionOperands = (numsNeeded: number): NumberOperand => {
     const minFactor = 2;
     const uno = getRandomNumber(minFactor, target - minFactor);
     const dos = target - uno;
-    
+
     numsNeeded -= 2;
     console.log(numsNeeded);
 
     const operands = [uno, dos];
     const avoid = new Set(operands);
-    
-    const allNumbers = [...operands];
-    const pool = get_array_range(minFactor, target - minFactor);
-    shuffle(pool);
 
-    while((allNumbers.length < numsNeeded) && (pool.length > 0)) {
+    const allNumbers = [...operands];
+
+    // rather than get a random number each time,
+    // i retrieve an array a range and pop from it
+    const pool = get_array_range(minFactor, target - minFactor, true);
+
+    while (allNumbers.length < numsNeeded && pool.length > 0) {
         const candidate = pool.pop()!;
         if (avoid.has(candidate)) continue;
         allNumbers.push(candidate);
@@ -68,18 +70,70 @@ const getAdditionOperands = (numsNeeded: number): NumberOperand => {
             avoid.add(complement);
         }
     }
-    
 
     // return { num: 4, operands: [2, 2], allNumbers: [2, 2] };
     return { num: target, operands: operands, allNumbers: allNumbers };
 };
 
 const getSubtractionOperands = (numsNeeded: number): NumberOperand => {
-    return { num: 4, operands: [2, 2], allNumbers: [2, 2] };
+    const targetDiff = getRandomNumber(1, 5);
+
+    const maxNumber = 100;
+    const pool = get_array_range(1, maxNumber - targetDiff + 1, true);
+
+    const smallNum = pool.pop()!;
+    const bigNum = smallNum + targetDiff;
+
+    const operands = [smallNum, bigNum];
+    const toAvoid = new Set(operands);
+
+    const allNumbers = [...operands];
+    while (allNumbers.length < numsNeeded && pool.length > 0) {
+        const cand = pool.pop()!
+        const absOne = cand - targetDiff;
+        const absTwo = cand + targetDiff;
+        if (toAvoid.has(cand) || toAvoid.has(absOne) || toAvoid.has(absTwo)) {
+            continue;
+        }
+
+        allNumbers.push(cand);
+        toAvoid.add(absOne);
+        toAvoid.add(absTwo);
+    }
+    
+
+    // return { num: 4, operands: [2, 2], allNumbers: [2, 2] };
+    return { num: targetDiff, operands: operands, allNumbers: allNumbers };
 };
 
 const getDivisionOperands = (numsNeeded: number): NumberOperand => {
-    return { num: 4, operands: [2, 2], allNumbers: [2, 2] };
+    const target = getRandomNumber(2, 10);
+
+    const smallNumber = getRandomNumber(2, 10);
+    const bigNumber = smallNumber * target;
+
+    const pool = get_array_range(2, 100, true);
+    const operands = [smallNumber, bigNumber];
+
+    const toAvoid = new Set(operands);
+    const allNumbers = [...operands];
+
+    while (allNumbers.length < numsNeeded && pool.length > 0){
+        const cand = pool.pop()!;
+        const high = cand * target;
+        const low = cand / target;
+
+        if (toAvoid.has(cand) || toAvoid.has(high) || toAvoid.has(low)){
+            continue;
+        }
+
+        allNumbers.push(cand);
+        toAvoid.add(high);
+        toAvoid.add(low);
+    }
+
+    // return { num: 4, operands: [2, 2], allNumbers: [2, 2] };
+    return { num: target, operands: operands, allNumbers: allNumbers };
 };
 
 const getMultiplicationOperands = (numsNeeded: number): NumberOperand => {

@@ -21,7 +21,8 @@ export const populateCells = (
     cells: NumCellModel[][]
 ): [NumCellModel[][], NumberOperand?, OperatorType?] => {
     // TODO make selection random
-    const operator = OperatorType.Addition;
+    // const operator = OperatorType.Addition;
+    const operator = OperatorType.Division;
     const numsNeeded = getNumsNeeded(dim);
 
     if (!numsNeeded) {
