@@ -1,6 +1,6 @@
 import { GridPos, NumCellModel } from "../../components/NumCell";
 import { GridDim } from "../../components/NumGrid";
-import { OperatorType } from "../../models/operators";
+import { getRandomOperator, OperatorType } from "../../models/operators";
 import {
     NumberOperand,
 } from "../../util_functions/get_multi_operands";
@@ -20,9 +20,7 @@ export const populateCells = (
     dim: GridDim,
     cells: NumCellModel[][]
 ): [NumCellModel[][], NumberOperand?, OperatorType?] => {
-    // TODO make selection random
-    // const operator = OperatorType.Addition;
-    const operator = OperatorType.Division;
+    const operator = getRandomOperator();
     const numsNeeded = getNumsNeeded(dim);
 
     if (!numsNeeded) {
@@ -73,3 +71,4 @@ const getShuffledGridPositions = (cells: NumCellModel[][]): GridPos[] => {
     shuffle(positions)
     return positions;
 }
+

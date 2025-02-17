@@ -11,3 +11,9 @@ const operators = {
     [OperatorType.Division]: (a: number, b: number) => a / b,
     [OperatorType.Multiplication]: (a: number, b: number) => a * b,
 };
+
+
+export const getRandomOperator = (): OperatorType => {
+    const operators = Object.values(OperatorType) as OperatorType[];
+    return operators[Math.floor(Math.random() * operators.length)];
+}
