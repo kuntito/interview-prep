@@ -1,86 +1,36 @@
-// https://members.codewithmosh.com/courses/ultimate-react-part2-1/lectures/46679158
+import { Text } from "@chakra-ui/react";
+import MobileFrame from "./components/MobileFrame";
+import { useState } from "react";
+import StartScreen from "./components/screens/StartScreen";
+import GamePlayScreen from "./components/screens/GamePlayScreen";
 
-import { Center, Text, VStack } from "@chakra-ui/react";
-import ms from "ms";
-import { useEffect, useState } from "react";
-import NumGrid, { GridDim } from "./components/NumGrid";
-import NumOpComp from "./components/NumOpComp";
-import OverlayComponent from "./components/OverlayComponent";
-import ProgressBar from "./components/ProgressBar";
-import useTimer from "./hooks/useTimer";
-import useNumGridStore from "./state-management/numGridStore";
-
-interface OverlayState {
-    show: boolean;
-    text: string;
+enum ScreenState {
+    startscreen,
+    gameplay,
+    endscreen,
 }
 
-function App() {
-    const dim: GridDim = { rows: 3, cols: 3 };
-    const cellSize = 100;
+const App = () => {
+    const [screenState, setScreenState] = useState(ScreenState.gameplay);
 
-    const { initCells, populateGrid, reset } =
-        useNumGridStore();
-    const isAnswerFound = useNumGridStore((s) => s.state.isAnswerFound);
-    const timerKey = useNumGridStore((s) => s.state.timerKey);
-
-    const overlayDuration = 1000;
-
-    const [overlayState, setOverlay] = useState<OverlayState>({
-        show: false,
-        text: "",
-    });
-
-    const triggerOverlay = (text: string) => {
-        setOverlay({ show: true, text });
-        console.log(text);
-
-        setTimeout(() => {
-            reset();
-            setOverlay({ show: false, text: "" });
-        }, overlayDuration);
+    const onStartGame = () => {
+        setScreenState(ScreenState.gameplay);
     };
 
-    useEffect(() => {
-        initCells(dim);
-        populateGrid();
-    }, []);
-
-    useEffect(() => {
-        if (!isAnswerFound) return;
-        triggerOverlay("answer found");
-    }, [isAnswerFound]);
-
-    const durationMillis = ms("1000s");
-    const onTimerEnd = () => {
-        triggerOverlay("time up");
+    const currScreen = () => {
+        switch (screenState) {
+            case ScreenState.startscreen:
+                return <StartScreen onStartGame={onStartGame} />;
+            case ScreenState.gameplay:
+                return <GamePlayScreen/>;
+            case ScreenState.endscreen:
+                return <Text>end screen</Text>;
+            default:
+                return <Text>invalid screen</Text>;
+        }
     };
 
-    const timeLeft = useTimer(durationMillis, onTimerEnd, timerKey);
-    const fraction = timeLeft / durationMillis;
-
-    return (
-        <Center width="100vw" height="100vh" backgroundColor="palette.500">
-            <VStack
-                width="360px"
-                height="640px"
-                justifyContent="center"
-                borderWidth={2}
-                gap="32px"
-                // up right down left
-                padding="16px 16px 0px 16px"
-            >
-                <ProgressBar fraction={fraction} />
-                {overlayState.show && (
-                    <OverlayComponent text={overlayState.text} />
-                )}
-                <NumOpComp />
-                <Center height="100%">
-                    <NumGrid cellSize={cellSize} />
-                </Center>
-            </VStack>
-        </Center>
-    );
-}
+    return <MobileFrame>{currScreen()}</MobileFrame>;
+};
 
 export default App;

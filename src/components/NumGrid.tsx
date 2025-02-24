@@ -1,30 +1,23 @@
 import { HStack, VStack } from "@chakra-ui/react";
-import useNumGridStore from "../state-management/numGridStore";
 import NumCell from "./NumCell";
 
-export interface GridDim {
-    rows: number;
-    cols: number;
+export interface GridPos {
+    ri: number;
+    ci: number;
 }
 
-interface Props {
-    cellSize: number;
-}
-
-const NumGrid = ({ cellSize }: Props) => {
-    const cells = useNumGridStore((s) => s.state.cells);
+const NumGrid = () => {
     const borderWidth = "2px";
     const borderColor = "palette.100";
+
+    const arr = [0, 1, 2];
+
     return (
         <VStack borderWidth={borderWidth} borderColor={borderColor} gap={0}>
-            {cells.map((row, ri) => (
+            {arr.map((row, ri) => (
                 <HStack gap={0} key={ri}>
-                    {row.map((model, ci) => (
-                        <NumCell
-                            key={`${ri}-${ci}`}
-                            cellPos={model.pos}
-                            cellSize={cellSize}
-                        />
+                    {arr.map((model, ci) => (
+                        <NumCell key={`${ri}-${ci}`} pos={{ ri: ri, ci: ci }} />
                     ))}
                 </HStack>
             ))}
