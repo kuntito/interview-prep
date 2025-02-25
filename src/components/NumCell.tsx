@@ -1,30 +1,36 @@
 import React, { useState } from "react";
-import { GridPos } from "./NumGrid";
 import { Center, Text } from "@chakra-ui/react";
+import { CellModel } from "../models/CellModel";
+import useNumGridStore from "../state-management/numGridStore";
 
 interface Props {
-    pos: GridPos;
+    cell: CellModel;
 }
 
-const NumCell = ({ pos }: Props) => {
+const NumCell = ({ cell }: Props) => {
     const cellSize = "100px";
-    const [isActive, setIsActive] = useState(false);
-    const onCellClick = (pos: GridPos) => {
-        setIsActive(!isActive)
-    };
+    // const [isActive, setIsActive] = useState(false);
+    
+    // const onCellClick = (pos: GridPos) => {
+    //     setIsActive(!isActive)
+    // };
 
+    const { onCellClick } = useNumGridStore();
+    const selectedCells = useNumGridStore(s => s.state.gridState.selectedCells);
+
+    const isActive = selectedCells.includes(cell.pos); 
     const borderWidth = isActive ? "4px" : "1px";
     const borderColor = isActive ? "yellow" : "palette.100";
     
 
     return (
         <Center
-            onClick={() => onCellClick(pos)}
+            onClick={() => onCellClick(cell.pos)}
             boxSize={cellSize}
             borderWidth={borderWidth}
             borderColor={borderColor}
         >
-            <Text>cell</Text>
+            <Text>{cell?.num}</Text>
         </Center>
     );
 };

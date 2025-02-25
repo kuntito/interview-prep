@@ -1,5 +1,7 @@
 import { HStack, VStack } from "@chakra-ui/react";
 import NumCell from "./NumCell";
+import { CellModel } from "../models/CellModel";
+import useNumGridStore from "../state-management/numGridStore";
 
 export interface GridPos {
     ri: number;
@@ -10,14 +12,17 @@ const NumGrid = () => {
     const borderWidth = "2px";
     const borderColor = "palette.100";
 
-    const arr = [0, 1, 2];
+    // const dummyCell: CellModel = {pos: {ri: 0, ci: 0}, num: 2};
+    // const dummyRow: CellModel[] = [dummyCell, dummyCell, dummyCell];
+    // const cells = [dummyRow, dummyRow, dummyRow];
 
+    const cells = useNumGridStore((s) => s.state.gridState.cells);
     return (
         <VStack borderWidth={borderWidth} borderColor={borderColor} gap={0}>
-            {arr.map((row, ri) => (
+            {cells.map((row, ri) => (
                 <HStack gap={0} key={ri}>
-                    {arr.map((model, ci) => (
-                        <NumCell key={`${ri}-${ci}`} pos={{ ri: ri, ci: ci }} />
+                    {row.map((cellModel, ci) => (
+                        <NumCell key={`${ri}-${ci}`} cell={cellModel} />
                     ))}
                 </HStack>
             ))}
