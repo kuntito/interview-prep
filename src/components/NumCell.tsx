@@ -22,7 +22,8 @@ const NumCell = ({ cell }: Props) => {
     const borderWidth = isActive ? "4px" : "1px";
     const borderColor = isActive ? "yellow" : "palette.100";
     
-
+    // console.log(cell);
+    
     return (
         <Center
             onClick={() => onCellClick(cell.pos)}

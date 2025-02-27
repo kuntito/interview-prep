@@ -12,24 +12,34 @@ interface Props {
     config: GameConfig;
 }
 
-const GamePlayScreen = ({ config }: Props) => {
-    const pos = { ri: 0, ci: 0 };
+const TimerComponent = ({ durationMillis }: { durationMillis: number }) => {
+    const [timeLeft, restartTimer] = useTimer(durationMillis);
+    const fraction = timeLeft / durationMillis;
 
-    const { initState } = useNumGridStore();
+    return <ProgressBar fraction={fraction} />;
+};
+
+const GamePlayScreen = ({ config }: Props) => {
+
+    const { initState, populateGrid } = useNumGridStore();
     const isInitialized = useNumGridStore((s) => s.state.isInitialized);
 
     const durationMillis = ms("500s");
-    const [timeLeft, restartTimer] = useTimer(durationMillis);
 
     useEffect(() => {
         initState(config);
     }, []);
 
+    useEffect(() => {
+        if (isInitialized) {
+            populateGrid();
+        }
+    }, [isInitialized]);
+
     // `fraction` should be the remainder of the time left
-    const fraction = timeLeft / durationMillis;
     const screen = isInitialized ? (
         <>
-            <ProgressBar fraction={fraction} />
+            <TimerComponent durationMillis={durationMillis} />
             <TargNumOperatorRow />
             <NumGrid></NumGrid>
         </>

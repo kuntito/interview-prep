@@ -7,11 +7,13 @@ import { dummyOperandInfo, OperandInfo } from "../models/OperandInfo";
 import { GridDim } from "../models/GridDim";
 import { GameConfig } from "../models/GameConfig";
 import getInitGameState from "../misc_functions/getInitGameState";
+import { populateCells } from "../misc_functions/populatingCells/populateCells";
 
 interface NumGridStore {
     state: GameState;
     initState: (config: GameConfig) => void;
     onCellClick: (pos: GridPos) => void;
+    populateGrid: () => void;
 }
 
 const defaultState: GameState = {
@@ -50,17 +52,38 @@ const useNumGridStore = create<NumGridStore>((set) => ({
                 if (selectedCells.length == maxSelectableCells) {
                     selectedCells.pop();
                 }
-    
+
                 selectedCells.push(pos);
             }
-
 
             const gridState = {
                 ...store.state.gridState,
                 selectedCells: selectedCells,
             };
+
             return {
                 state: { ...store.state, gridState: gridState },
+            };
+        });
+    },
+    populateGrid: () => {
+        set((store) => {
+            const { dim, cells } = store.state.gridState;
+
+            const [newCells, operandInfo] = populateCells(dim, cells);
+            if (!operandInfo) return { state: store.state };            
+
+            const gridState = {
+                ...store.state.gridState,
+                cells: newCells,
+            };
+
+            return {
+                state: {
+                    ...store.state,
+                    gridState,
+                    operandInfo: operandInfo,
+                },
             };
         });
     },
@@ -68,7 +91,10 @@ const useNumGridStore = create<NumGridStore>((set) => ({
 
 export default useNumGridStore;
 
-const isPosInArray = (pos: GridPos, selectedCells: GridPos[]): [boolean, number | undefined] => {
+const isPosInArray = (
+    pos: GridPos,
+    selectedCells: GridPos[]
+): [boolean, number | undefined] => {
     const index = selectedCells.findIndex(
         (cp) => cp.ri === pos.ri && cp.ci === pos.ci
     );
@@ -76,4 +102,4 @@ const isPosInArray = (pos: GridPos, selectedCells: GridPos[]): [boolean, number 
     const isFindIndex = index !== -1;
     const idx = isFindIndex ? index : undefined;
     return [isFindIndex, idx];
-}
+};

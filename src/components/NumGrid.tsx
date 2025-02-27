@@ -17,6 +17,8 @@ const NumGrid = () => {
     // const cells = [dummyRow, dummyRow, dummyRow];
 
     const cells = useNumGridStore((s) => s.state.gridState.cells);
+    // console.log(cells);
+
     return (
         <VStack borderWidth={borderWidth} borderColor={borderColor} gap={0}>
             {cells.map((row, ri) => (
