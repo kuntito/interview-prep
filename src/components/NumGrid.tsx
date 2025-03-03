@@ -16,7 +16,7 @@ const NumGrid = () => {
     // const dummyRow: CellModel[] = [dummyCell, dummyCell, dummyCell];
     // const cells = [dummyRow, dummyRow, dummyRow];
 
-    const cells = useNumGridStore((s) => s.state.gridState.cells);
+    const cells = useNumGridStore((s) => s.state.cells);
     // console.log(cells);
 
     return (

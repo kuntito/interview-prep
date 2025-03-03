@@ -1,49 +1,56 @@
 import { create } from "zustand";
 import { GridPos } from "../components/NumGrid";
-import { CellModel } from "../models/CellModel";
-import { GameState } from "../models/GameState";
-import { emptyGridState, GridState } from "../models/GridState";
-import { dummyOperandInfo, OperandInfo } from "../models/OperandInfo";
-import { GridDim } from "../models/GridDim";
-import { GameConfig } from "../models/GameConfig";
 import getInitGameState from "../misc_functions/getInitGameState";
 import { populateCells } from "../misc_functions/populatingCells/populateCells";
+import { GameConfig } from "../models/GameConfig";
+import { GameState } from "../models/GameState";
+import { OperandInfo } from "../models/OperandInfo";
+import { CellModel } from "../models/CellModel";
+import { GridDim } from "../models/GridDim";
 
 interface NumGridStore {
     state: GameState;
     initState: (config: GameConfig) => void;
     onCellClick: (pos: GridPos) => void;
-    populateGrid: () => void;
+    initializeGame: () => void;
+    repopulateGrid: () => void;
 }
 
-const defaultState: GameState = {
-    questionCount: 0,
-    totalQuestions: 0,
+export const defaultGameState: GameState = {
+    questionCount: 1,
+    isQuestionLimitReached: false,
     score: 0,
-    gridState: emptyGridState,
     operandInfo: {} as OperandInfo,
     isInitialized: false,
     config: undefined,
+    isAnswerFound: false,
+    dim: {} as GridDim,
+    cells: [],
+    selectedCells: [],
 };
 
 const useNumGridStore = create<NumGridStore>((set) => ({
-    state: defaultState,
+    state: defaultGameState,
     initState: (config) => {
         set((store) => {
             return {
-                state: getInitGameState(config, store.state),
+                state: getInitGameState(config),
             };
         });
     },
     // each cell click is a toggle, you select and unselect cells
     onCellClick: (pos: GridPos) => {
-        const { ri, ci } = pos;
-        console.log(`cell (${ri},${ci}) clicked`);
-
-        const maxSelectableCells = 2;
-
         set((store) => {
-            const selectedCells = [...store.state.gridState.selectedCells];
+            if (store.state.isAnswerFound) {
+                return { state: store.state };
+            }
+
+            const { ri, ci } = pos;
+            // console.log(`cell (${ri},${ci}) clicked`);
+
+            const maxSelectableCells = 2;
+
+            const selectedCells = [...store.state.selectedCells];
             const [isFindIndex, index] = isPosInArray(pos, selectedCells);
 
             if (isFindIndex) {
@@ -56,37 +63,90 @@ const useNumGridStore = create<NumGridStore>((set) => ({
                 selectedCells.push(pos);
             }
 
-            const gridState = {
-                ...store.state.gridState,
-                selectedCells: selectedCells,
-            };
+            // if selectedCells are the mainOperands, answer is found
+            // update score
+            if (
+                isSelectedCellsCorrect(
+                    selectedCells,
+                    store.state.operandInfo.mainOperands,
+                    store.state.cells
+                )
+            ) {
+                // console.log("answer found");
+                return {
+                    state: {
+                        ...store.state,
+                        selectedCells: selectedCells,
+                        isAnswerFound: true,
+                        score: store.state.score + 1,
+                    },
+                };
+            }
 
             return {
-                state: { ...store.state, gridState: gridState },
+                state: { ...store.state, selectedCells: selectedCells },
             };
         });
     },
-    populateGrid: () => {
+    initializeGame: () => {
         set((store) => {
-            const { dim, cells } = store.state.gridState;
+            const { dim } = store.state;
 
-            const [newCells, operandInfo] = populateCells(dim, cells);
-            if (!operandInfo) return { state: store.state };            
+            const [newCells, operandInfo] = populateCells(dim);
+            if (!operandInfo) return { state: store.state };
 
-            const gridState = {
-                ...store.state.gridState,
-                cells: newCells,
-            };
-
+            const totalQuestions = store.state.config!.totalQuestions;
             return {
                 state: {
                     ...store.state,
-                    gridState,
+                    cells: newCells,
                     operandInfo: operandInfo,
+                    isQuestionLimitReached: store.state.questionCount === totalQuestions
                 },
             };
         });
     },
+    //TODO update store for game end, navigate to end screen
+    repopulateGrid: () => {
+        
+        set((store) => {
+            if (store.state.isQuestionLimitReached) {
+                console.log('question limit reached');
+                return {
+                    state: store.state,
+                };
+            }
+            // console.log("repopulate called!");
+
+            // get the initial state
+            // populate it with the persistent info i.e. score, questionCount
+            const config = store.state.config!;
+            // add the cells
+            const dim = store.state.dim;
+            const [newCells, operandInfo] = populateCells(dim);
+
+            if (!operandInfo) return { state: store.state };
+
+            const newQuestionCount = store.state.questionCount + 1;
+            const totalQuestions = store.state.config!.totalQuestions;
+
+            console.log(newQuestionCount + " => " + totalQuestions);
+            
+            const initState: GameState = {
+                ...getInitGameState(config!),
+                score: store.state.score,
+                questionCount: newQuestionCount,
+                cells: newCells,
+                operandInfo: operandInfo,
+                isQuestionLimitReached: newQuestionCount === totalQuestions,
+            };
+
+            return {
+                state: initState,
+            };
+        });
+    },
+
 }));
 
 export default useNumGridStore;
@@ -102,4 +162,23 @@ const isPosInArray = (
     const isFindIndex = index !== -1;
     const idx = isFindIndex ? index : undefined;
     return [isFindIndex, idx];
+};
+
+const isSelectedCellsCorrect = (
+    selectedCells: GridPos[],
+    operands: number[],
+    cells: CellModel[][]
+) => {
+    if (!operands) return false;
+
+    const selectedValues = selectedCells.map((pos) => {
+        const { ri: r, ci: c } = pos;
+        const num = cells[r][c].num;
+        return num;
+    });
+
+    operands.sort();
+    selectedValues.sort();
+
+    return operands.toString() === selectedValues.toString();
 };

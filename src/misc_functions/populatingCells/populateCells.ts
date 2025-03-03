@@ -9,10 +9,12 @@ import { getShuffledGridPositions } from "./getShuffledGridPositions";
 
 export const populateCells = (
     dim: GridDim,
-    cells: CellModel[][]
 ): [CellModel[][], OperandInfo?] => {
     const operator = getRandomOperator();
     const numsNeeded = getNumsNeeded(dim);
+    const cells = getCellArray(dim);
+
+
 
     if (!numsNeeded) {
         console.log(`grid doesn't have enough cells to place operands`);
@@ -25,17 +27,21 @@ export const populateCells = (
     const operandInfo = getOperands(operator, numsNeeded);
     if (!operandInfo) {
         console.log("could not populate grid");
-    
+
         return [cells, undefined];
     }
-    
+
     const allGridPositions: GridPos[] = getShuffledGridPositions(cells);
-    
+
     const clonedCells: CellModel[][] = cells.map((row) =>
         row.map((cell) => ({ ...cell }))
     );
 
+    // FIXME to display all operands
     const allOperands = [...operandInfo?.allOperands];
+
+    // FIXME to display correct operands
+    // const allOperands = [...operandInfo?.mainOperands];
 
     while (allOperands.length > 0 && allGridPositions.length > 0) {
         const { ri, ci } = allGridPositions.pop()!;
@@ -45,4 +51,23 @@ export const populateCells = (
     }
 
     return [clonedCells, operandInfo];
+};
+
+const getCellArray = (dim: GridDim): CellModel[][] => {
+    const cells: CellModel[][] = [];
+
+    const { rows, cols } = dim;
+
+    for (let ri = 0; ri < rows; ri++) {
+        const row: CellModel[] = [];
+        for (let ci = 0; ci < cols; ci++) {
+            const model: CellModel = {
+                pos: { ri, ci },
+            };
+            row.push(model);
+        }
+        cells.push(row);
+    }
+
+    return cells;
 };

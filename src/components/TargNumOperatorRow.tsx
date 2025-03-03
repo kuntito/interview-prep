@@ -8,7 +8,7 @@ const TargNumOperatorRow = () => {
 
   return (
     <HStack>
-        <Card text={operator}/>
+        <Card text={operator} fontSizee='30px'/>
         <Card text={`${targetNum}`}/>
     </HStack>
   )

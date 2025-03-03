@@ -1,14 +1,14 @@
 import { GameConfig } from "../models/GameConfig";
 import { GameState } from "../models/GameState";
-import getInitGridState from "./getInitGridState";
+import { defaultGameState } from "../state-management/numGridStore";
+import getInitCells from "./getInitCells";
 
-const getInitGameState = (config: GameConfig, state: GameState): GameState => {
-    const { totalQuestions, gridDim } = config;
-    const gridState = getInitGridState(gridDim, state.gridState);
+const getInitGameState = (config: GameConfig): GameState => {
+    const { gridDim } = config;
     return {
-        ...state,
-        totalQuestions: totalQuestions,
-        gridState: gridState,
+        ...defaultGameState,
+        cells: getInitCells(gridDim),
+        dim: gridDim,
         isInitialized: true,
         config: config,
     };

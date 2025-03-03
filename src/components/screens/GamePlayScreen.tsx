@@ -1,30 +1,72 @@
+import { Text, VStack } from "@chakra-ui/react";
 import ms from "ms";
-import useTimer from "../../hooks/useTimer";
-import NumGrid from "../NumGrid";
-import ProgressBar from "../ProgressBar";
-import TargNumOperatorRow from "../TargNumOperatorRow";
+import { useEffect } from "react";
+import useOverlay from "../../hooks/useOverlay";
 import { GameConfig } from "../../models/GameConfig";
 import useNumGridStore from "../../state-management/numGridStore";
-import { useEffect } from "react";
-import { Text } from "@chakra-ui/react";
+import useTimerStore from "../../state-management/timerStore";
+import NumGrid from "../NumGrid";
+import TargNumOperatorRow from "../TargNumOperatorRow";
+import TimerComponent from "../TimerComponent";
 
 interface Props {
     config: GameConfig;
+    onEndGame: () => void;
 }
 
-const TimerComponent = ({ durationMillis }: { durationMillis: number }) => {
-    const [timeLeft, restartTimer] = useTimer(durationMillis);
-    const fraction = timeLeft / durationMillis;
+const GamePlayScreen = ({ config, onEndGame }: Props) => {
+    const initState = useNumGridStore((s) => s.initState);
+    const initializeGame = useNumGridStore((s) => s.initializeGame);
+    const repopulateGrid = useNumGridStore((s) => s.repopulateGrid);
 
-    return <ProgressBar fraction={fraction} />;
-};
-
-const GamePlayScreen = ({ config }: Props) => {
-
-    const { initState, populateGrid } = useNumGridStore();
     const isInitialized = useNumGridStore((s) => s.state.isInitialized);
+    const { questionDurationMillis, overlayDurationMillis } = config;
 
-    const durationMillis = ms("500s");
+    const [overlayState, triggerOverlay] = useOverlay(overlayDurationMillis);
+    const isAnswerFound = useNumGridStore((s) => s.state.isAnswerFound);
+    const isQuestionLimitReached = useNumGridStore(
+        (s) => s.state.isQuestionLimitReached
+    );
+
+    const beginTimer = useTimerStore((s) => s.beginTimer);
+    const stopTimer = useTimerStore((s) => s.stopTimer);
+
+    useEffect(() => {
+        beginTimer(questionDurationMillis);
+        return () => stopTimer();
+    }, []);
+
+    const showOverlayAndReload = (text: string) => {
+        // `setTimeout` prevents the overlay from displaying immediately
+        setTimeout(() => {
+            stopTimer();
+            if (isQuestionLimitReached) {
+                triggerOverlay("game end");
+                stopTimer();
+                setTimeout(() => {
+                    onEndGame();
+                }, overlayDurationMillis);
+            } else {
+                triggerOverlay(text);
+                repopulateGrid();
+            }
+
+        }, 500);
+
+        // after overlay ends, start the timer
+        setTimeout(() => {
+            if (!isQuestionLimitReached) {
+                beginTimer(questionDurationMillis);
+            }
+            return () => stopTimer();
+        }, overlayDurationMillis);
+    };
+
+    useEffect(() => {
+        if (isAnswerFound) {
+            showOverlayAndReload("correct!");
+        }
+    }, [isAnswerFound]);
 
     useEffect(() => {
         initState(config);
@@ -32,16 +74,21 @@ const GamePlayScreen = ({ config }: Props) => {
 
     useEffect(() => {
         if (isInitialized) {
-            populateGrid();
+            initializeGame();
         }
     }, [isInitialized]);
 
-    // `fraction` should be the remainder of the time left
     const screen = isInitialized ? (
         <>
-            <TimerComponent durationMillis={durationMillis} />
-            <TargNumOperatorRow />
-            <NumGrid></NumGrid>
+            {/* <ScoreAndCount /> */}
+            <TimerComponent
+                displayOverlay={() => showOverlayAndReload("time up!")}
+            />
+            <VStack height="100%" justifyContent="center" gap="120px">
+                <TargNumOperatorRow />
+                <NumGrid></NumGrid>
+            </VStack>
+            {overlayState.component}
         </>
     ) : (
         <Text>nout!</Text>
@@ -50,3 +97,14 @@ const GamePlayScreen = ({ config }: Props) => {
 };
 
 export default GamePlayScreen;
+
+const ScoreAndCount = () => {
+    const { score, questionCount: qNum } = useNumGridStore((s) => s.state);
+
+    return (
+        <>
+            <Text>{`score: ${score}`}</Text>
+            <Text>{`num: ${qNum}`}</Text>
+        </>
+    );
+};

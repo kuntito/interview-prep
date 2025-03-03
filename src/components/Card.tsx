@@ -2,9 +2,10 @@ import { border, Center, Text } from "@chakra-ui/react";
 
 interface Props {
     text: string;
+    fontSizee?: string; // hack to increase operator font size
 }
 
-export const Card = ({ text }: Props) => {
+export const Card = ({ text, fontSizee }: Props) => {
     const width = "100px";
     const height = "80px";
     const fontSize = "20px";
@@ -15,7 +16,7 @@ export const Card = ({ text }: Props) => {
         <Center
             width={width}
             height={height}
-            fontSize={fontSize}
+            fontSize={fontSizee ? fontSizee : fontSize}
             borderWidth={borderWidth}
             borderRadius="lg"
             borderColor={borderColor}
