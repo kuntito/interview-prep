@@ -6,8 +6,12 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 const colors = {
     palette: {
-        500: "#598392",
         100: "#060631",
+        300: "#FFFFFF",
+        400: "#90E0EF",
+        500: "#598392",
+        "highlight": "#E4FFAA",
+
     },
 };
 
@@ -20,7 +24,7 @@ const theme = extendTheme({
                     bg: "palette.100",
                 },
                 track: {
-                    bg: "palette.500",
+                    bg: "palette.400",
                 },
             },
         },

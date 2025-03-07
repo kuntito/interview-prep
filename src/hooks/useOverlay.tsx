@@ -8,15 +8,15 @@ interface OverlayState {
 
 const useOverlay = (
     overlayDurationMillis: number
-): [OverlayState, (text: string) => void] => {
+): [OverlayState, (text: string, children?: ReactNode) => void] => {
     const [overlayState, setOverlay] = useState<OverlayState>({
         show: false,
     });
 
-    const triggerOverlay = (text: string) => {
+    const triggerOverlay = (text: string, children?: ReactNode) => {
         // console.log("overlay called");
 
-        const component = <OverlayComponent text={text} />;
+        const component = <OverlayComponent text={text} children={children}/>;
         setOverlay({ show: true, component: component });
         // console.log(text);
 

@@ -2,7 +2,7 @@ export enum OperatorType {
     Addition = "+",
     Subtraction = "-",
     Division = "÷",
-    Multiplication = "x",
+    Multiplication = "×",
 }
 
 export const getRandomOperator = (): OperatorType => {

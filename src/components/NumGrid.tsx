@@ -20,7 +20,11 @@ const NumGrid = () => {
     // console.log(cells);
 
     return (
-        <VStack borderWidth={borderWidth} borderColor={borderColor} gap={0}>
+        <VStack
+            // borderWidth={borderWidth}
+            // borderColor={borderColor}
+            gap={0}
+        >
             {cells.map((row, ri) => (
                 <HStack gap={0} key={ri}>
                     {row.map((cellModel, ci) => (

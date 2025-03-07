@@ -21,9 +21,9 @@ const ProgressBar = ({fraction}: Props) => {
     return (
         <Progress
             borderRadius="full"
-            border="2px"
+            // border="2px"
             height="16px"
-            borderColor="palette.100"
+            // borderColor="palette.100"
             width="100%"
             value={percentage}
             transition={isDecreasing ? animation: 'none'}
@@ -32,6 +32,10 @@ const ProgressBar = ({fraction}: Props) => {
                     transition: isDecreasing ? animation: 'none',
                 },
             }}
+            style={{
+                boxShadow: "inset 0 8px 8px rgba(234, 11, 11, 0.2)"
+            }}
+            
         />
     );
 };

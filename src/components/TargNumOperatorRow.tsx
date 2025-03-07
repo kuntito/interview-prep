@@ -5,11 +5,10 @@ import useNumGridStore from '../state-management/numGridStore'
 
 const TargNumOperatorRow = () => {
     const { targetNum, operator } = useNumGridStore((s) => s.state.operandInfo);
-
   return (
-    <HStack>
-        <Card text={operator} fontSizee='30px'/>
-        <Card text={`${targetNum}`}/>
+    <HStack gap={"16px"}>
+        <Card text={operator} scaleText={1.3} _borderColor='palette.300'/>
+        <Card text={`${targetNum}`} _bgColor={"palette.100"}/>
     </HStack>
   )
 }

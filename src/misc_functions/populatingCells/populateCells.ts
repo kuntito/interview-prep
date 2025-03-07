@@ -38,10 +38,10 @@ export const populateCells = (
     );
 
     // FIXME to display all operands
-    const allOperands = [...operandInfo?.allOperands];
+    // const allOperands = [...operandInfo?.allOperands];
 
     // FIXME to display correct operands
-    // const allOperands = [...operandInfo?.mainOperands];
+    const allOperands = [...operandInfo?.mainOperands];
 
     while (allOperands.length > 0 && allGridPositions.length > 0) {
         const { ri, ci } = allGridPositions.pop()!;

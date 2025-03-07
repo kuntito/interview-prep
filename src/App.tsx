@@ -15,7 +15,7 @@ enum ScreenState {
 }
 
 const App = () => {
-    const [screenState, setScreenState] = useState(ScreenState.startscreen);
+    const [screenState, setScreenState] = useState(ScreenState.gameplay);
 
     const onStartGame = () => {
         setScreenState(ScreenState.gameplay);
@@ -30,7 +30,7 @@ const App = () => {
     const config: GameConfig = {
         gridDim: gridDim,
         totalQuestions: totalQuestions,
-        questionDurationMillis: ms("15s"),
+        questionDurationMillis: ms("5s"),
         overlayDurationMillis: ms("3s"),
     };
 

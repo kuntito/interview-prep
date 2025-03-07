@@ -1,25 +1,35 @@
 import { border, Center, Text } from "@chakra-ui/react";
+import { ReactNode } from "react";
 
 interface Props {
-    text: string;
-    fontSizee?: string; // hack to increase operator font size
+    text?: string;
+    _bgColor?: string;
+    _borderColor?: string;
+    scaleText?: number;
 }
 
-export const Card = ({ text, fontSizee }: Props) => {
+export const Card = ({ text, _bgColor, scaleText, _borderColor }: Props) => {
     const width = "100px";
     const height = "80px";
-    const fontSize = "20px";
-    const borderWidth = "2px";
-    const borderColor = "palette.100"
+    const fontSize = "30px";
+    const borderWidth = "4px";
+    const borderColor = _borderColor ? _borderColor : "palette.100";
+    const bgColor = _bgColor ? _bgColor : "";
+
+    const scaledFontSize = scaleText
+        ? `${parseFloat(fontSize) * scaleText}px`
+        : fontSize;
 
     return (
         <Center
             width={width}
             height={height}
-            fontSize={fontSizee ? fontSizee : fontSize}
+            fontSize={scaleText ? scaledFontSize : fontSize}
+            fontWeight={"bold"}
             borderWidth={borderWidth}
             borderRadius="lg"
             borderColor={borderColor}
+            bgColor={bgColor}
         >
             <Text>{text}</Text>
         </Center>

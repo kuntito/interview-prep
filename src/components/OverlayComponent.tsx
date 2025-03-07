@@ -3,9 +3,10 @@ import { ReactNode, useState } from "react";
 
 interface Props {
     text: string;
+    children?: ReactNode;
 }
 
-const OverlayComponent = ({ text }: Props) => {
+const OverlayComponent = ({ text, children }: Props) => {
     return (
         <Box
             position="fixed"
@@ -19,9 +20,13 @@ const OverlayComponent = ({ text }: Props) => {
             alignItems="center"
             zIndex="1000" // Ensure it's on top
         >
-            <Text fontSize="35px" fontWeight="bold">
-                {text}
-            </Text>
+            {children ? (
+                children
+            ) : (
+                <Text fontSize="35px" fontWeight="bold">
+                    {text}
+                </Text>
+            )}
         </Box>
     );
 };

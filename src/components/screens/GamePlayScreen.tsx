@@ -1,6 +1,6 @@
-import { Text, VStack } from "@chakra-ui/react";
+import { Image, Text, VStack } from "@chakra-ui/react";
 import ms from "ms";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import useOverlay from "../../hooks/useOverlay";
 import { GameConfig } from "../../models/GameConfig";
 import useNumGridStore from "../../state-management/numGridStore";
@@ -36,7 +36,7 @@ const GamePlayScreen = ({ config, onEndGame }: Props) => {
         return () => stopTimer();
     }, []);
 
-    const showOverlayAndReload = (text: string) => {
+    const showOverlayAndReload = (text: string, children?: ReactNode) => {
         // `setTimeout` prevents the overlay from displaying immediately
         setTimeout(() => {
             stopTimer();
@@ -47,10 +47,9 @@ const GamePlayScreen = ({ config, onEndGame }: Props) => {
                     onEndGame();
                 }, overlayDurationMillis);
             } else {
-                triggerOverlay(text);
+                triggerOverlay(text, children);
                 repopulateGrid();
             }
-
         }, 500);
 
         // after overlay ends, start the timer
@@ -64,7 +63,10 @@ const GamePlayScreen = ({ config, onEndGame }: Props) => {
 
     useEffect(() => {
         if (isAnswerFound) {
-            showOverlayAndReload("correct!");
+            showOverlayAndReload(
+                "correct!",
+                <Image src="public\assets\ic_check.svg" />
+            );
         }
     }, [isAnswerFound]);
 
@@ -82,7 +84,17 @@ const GamePlayScreen = ({ config, onEndGame }: Props) => {
         <>
             {/* <ScoreAndCount /> */}
             <TimerComponent
-                displayOverlay={() => showOverlayAndReload("time up!")}
+                displayOverlay={() =>
+                    showOverlayAndReload(
+                        "time up!",
+                        <VStack>
+                            <Image src="public\assets\ic_timer.svg" />
+                            <Text fontSize="35px" fontWeight="bold">
+                                time up!
+                            </Text>
+                        </VStack>
+                    )
+                }
             />
             <VStack height="100%" justifyContent="center" gap="120px">
                 <TargNumOperatorRow />
