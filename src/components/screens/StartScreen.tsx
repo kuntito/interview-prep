@@ -1,10 +1,10 @@
 import { Button } from "@chakra-ui/react";
-import useGameScreenStore, {
-    ScreenType,
-} from "../../state-management/gameScreenStore";
+import useAppStore from "../../state-management/appStore";
+import ScreenType from "../../models/ScreenTypes";
+
 
 const StartScreen = () => {
-    const navigateTo = useGameScreenStore((s) => s.navigateTo);
+    const navigateTo = useAppStore((s) => s.navigateTo);
     return (
         <Button
             background="palette.100"

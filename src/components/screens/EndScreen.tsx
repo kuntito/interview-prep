@@ -1,10 +1,10 @@
 import { Button, Text } from "@chakra-ui/react";
-import useGameScreenStore, { ScreenType } from "../../state-management/gameScreenStore";
-
+import ScreenType from "../../models/ScreenTypes";
+import useAppStore from "../../state-management/appStore";
 
 
 const EndScreen = () => {
-    const navigateTo = useGameScreenStore(s => s.navigateTo);
+    const navigateTo = useAppStore((s) => s.navigateTo);
     return (
         <>
             <Text>end screen!</Text>

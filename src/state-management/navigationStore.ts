@@ -1,19 +1,15 @@
 import { create } from "zustand";
+import ScreenType from "../models/ScreenTypes";
 
-export enum ScreenType {
-    start,
-    gamePlay,
-    end,
-}
 
-interface GameScreenStore {
+interface NavigationStore {
     currScreen: ScreenType;
     navigateTo: (nextScreen: ScreenType) => void;
 }
 
 const defaultScreenState = ScreenType.start;
 
-const useGameScreenStore = create<GameScreenStore>((set) => ({
+const useGameScreenStore = create<NavigationStore>((set) => ({
     currScreen: defaultScreenState,
     navigateTo: (nextScreen: ScreenType) => {
         set({ currScreen: nextScreen });

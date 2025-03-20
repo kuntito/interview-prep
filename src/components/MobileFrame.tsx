@@ -1,10 +1,10 @@
 import { Center, Text, VStack } from "@chakra-ui/react";
-import useGameScreenStore, {
-    ScreenType,
-} from "../state-management/gameScreenStore";
+
 import StartScreen from "./screens/StartScreen";
 import GamePlayScreen from "./screens/GamePlayScreen";
 import EndScreen from "./screens/EndScreen";
+import useAppStore from "../state-management/appStore";
+import ScreenType from "../models/ScreenTypes";
 
 const renderScreen = (screen: ScreenType) => {
     switch (screen) {
@@ -20,7 +20,7 @@ const renderScreen = (screen: ScreenType) => {
 };
 
 const MobileFrame = () => {
-    const currentScreen = useGameScreenStore((s) => s.currScreen);
+    const currentScreen = useAppStore((s) => s.state.currScreen);
 
     return (
         <Center width="100vw" height="100vh" backgroundColor="palette.500">
