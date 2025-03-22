@@ -1,7 +1,7 @@
 import { Center, Text, VStack } from "@chakra-ui/react";
 
-import StartScreen from "./screens/StartScreen";
-import GamePlayScreen from "./screens/GamePlayScreen";
+import StartScreen from "./screens/start/StartScreen";
+import GamePlayScreen from "./screens/gameplay/GamePlayScreen";
 import EndScreen from "./screens/EndScreen";
 import useAppStore from "../state-management/appStore";
 import ScreenType from "../models/ScreenTypes";

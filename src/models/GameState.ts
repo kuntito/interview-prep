@@ -1,7 +1,7 @@
 // what things change during game play
 // time
 
-import OperatorType from "./OperatorType";
+import GridDim from "./GridDim";
 import QuestionDetails from "./QuestionDetails";
 
 // grid items
@@ -14,6 +14,8 @@ import QuestionDetails from "./QuestionDetails";
 
 interface GameState {
     questionDetails: QuestionDetails,
+    gridDim: GridDim,
+    isStarted: boolean,
 }
 
 export default GameState;

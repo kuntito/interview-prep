@@ -1,7 +1,6 @@
 import { Button } from "@chakra-ui/react";
-import useAppStore from "../../state-management/appStore";
-import ScreenType from "../../models/ScreenTypes";
-
+import useAppStore from "../../../state-management/appStore";
+import ScreenType from "../../../models/ScreenTypes";
 
 const StartScreen = () => {
     const navigateTo = useAppStore((s) => s.navigateTo);

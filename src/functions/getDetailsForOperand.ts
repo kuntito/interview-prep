@@ -3,7 +3,7 @@ import QuestionDetails from "../models/QuestionDetails";
 import getArrayRange from "./getArrayRange";
 import getRandomNumber from "./getRandomNumber";
 
-export const getOperands = (
+export const getDetailsForOperand = (
     op: OperatorType,
     numsNeeded: number
 ): QuestionDetails | undefined => {
