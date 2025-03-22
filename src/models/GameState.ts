@@ -2,6 +2,7 @@
 // time
 
 import OperatorType from "./OperatorType";
+import QuestionDetails from "./QuestionDetails";
 
 // grid items
 // target number
@@ -9,12 +10,7 @@ import OperatorType from "./OperatorType";
 // the above three are connected,
 // it makes sense to group them together, gridInfo
 
-interface QuestionDetails {
-    gridNumbers: number[],
-    targetNumber: number,
-    correctSelections: number[],
-    operator: OperatorType,
-}
+
 
 interface GameState {
     questionDetails: QuestionDetails,
