@@ -14,9 +14,10 @@ interface AppStore {
 }
 
 const defaultState: AppState = {
-    currScreen: ScreenType.start,
+    currScreen: ScreenType.gamePlay,
     prevGameStat: null,
     config: {} as GameConfig,
+    isInitialized: false,
 };
 
 const useAppStore = create<AppStore>((set) => ({
@@ -26,7 +27,8 @@ const useAppStore = create<AppStore>((set) => ({
             return {
                 state: {
                     ...store.state,
-                    config: config
+                    config: config,
+                    isInitialized: true,
                 }
             }
         })

@@ -21,8 +21,9 @@ const renderScreen = (screen: ScreenType) => {
 
 const MobileFrame = () => {
     const currentScreen = useAppStore((s) => s.state.currScreen);
+    const isGameInitialized = useAppStore(s => s.state.isInitialized);
 
-    return (
+    return isGameInitialized ? (
         <Center width="100vw" height="100vh" backgroundColor="palette.500">
             <VStack
                 width="360px"
@@ -36,7 +37,7 @@ const MobileFrame = () => {
                 {renderScreen(currentScreen)}
             </VStack>
         </Center>
-    );
+    ) : "";
 };
 
 export default MobileFrame;

@@ -4,6 +4,7 @@ import ScreenType from "../../../models/ScreenTypes";
 import TargetAndOperand from "./TargetAndOperand";
 import useGamePlayStore from "../../../state-management/gamePlayStore";
 import { useEffect } from "react";
+import NumGrid from "./NumGrid";
 
 const placeHolder = () => {
     const navigateTo = useAppStore((s) => s.navigateTo);
@@ -23,6 +24,7 @@ const placeHolder = () => {
 };
 
 const GamePlayScreen = () => {
+
     const startGame = useGamePlayStore(s => s.startGame);
     const isStarted = useGamePlayStore(s => s.state.isStarted);
     const gridDim = useAppStore(s => s.state.config.gridDim);
@@ -35,6 +37,7 @@ const GamePlayScreen = () => {
         <>
             <VStack height="100%" justifyContent="center" gap="120px">
                 <TargetAndOperand />
+                <NumGrid />
             </VStack>
         </>
     ) : "";

@@ -6,6 +6,7 @@ interface AppState {
     currScreen: ScreenType;
     prevGameStat: GameStats | null;
     config: GameConfig;
+    isInitialized: boolean,
 }
 
 export default AppState;

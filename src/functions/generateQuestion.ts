@@ -12,10 +12,13 @@ const generateQuestion: (dim: GridDim) => QuestionDetails | undefined = (
 
     if (!numsNeeded) {
         console.log(`grid doesn't have enough cells to place operands`);
-        return
+        return;
     }
     const questionDetails = getDetailsForOperand(operator, numsNeeded);
-    
+
+    if (questionDetails) {
+        questionDetails.allNumbers = [...questionDetails.correctSelections];
+    }
 
     return questionDetails;
 };
