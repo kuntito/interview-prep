@@ -10,12 +10,14 @@ const App = () => {
     const startScreen = ScreenType.start;
     const gridDim: GridDim = { rows: 3, cols: 3 };
     const totalQuestions = 3;
-    const questionDurationMillis = ms("50s")
+    const questionDurationMillis = ms("50s");
+    const overlayDurationMillis = ms("3s");
 
     const gameConfig: GameConfig = {
         gridDim: gridDim,
         totalQuestions: totalQuestions,
         questionDurationMillis: questionDurationMillis,
+        overlayDurationMillis: overlayDurationMillis,
     }
 
     const initializeGameConfig = useAppStore(s => s.initializeGameConfig)

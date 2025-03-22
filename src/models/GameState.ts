@@ -1,6 +1,7 @@
 // what things change during game play
 // time
 
+import { GameEndStatus } from "../state-management/gamePlayStore";
 import CellModel from "./CellModel";
 import GridDim from "./GridDim";
 import QuestionDetails from "./QuestionDetails";
@@ -18,6 +19,7 @@ interface GameState {
     isAnswerFound: boolean;
     currentSelections: CellModel[];
     grid: CellModel[][];
+    gameEndStatus?: GameEndStatus;
 }
 
 export default GameState;

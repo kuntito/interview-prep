@@ -11,10 +11,20 @@ import OperatorType from "../models/OperatorType";
 import QuestionDetails from "../models/QuestionDetails";
 import { create } from "zustand";
 import { shuffle } from "../functions/shuffleArray";
+import useTimerStore from "./timerStore";
+
+export enum GameEndStatus {
+    TimeUp = "time up",
+    CorrectAnswer = "correct answer",
+}
 
 interface GamePlayStore {
     state: GameState;
-    startGame: (gridDim: GridDim) => void;
+    startGame: (
+        gridDim: GridDim,
+        durationMillis: number,
+        overlayDurationMillis: number
+    ) => void;
     stopGame: () => void;
     onCellClick: (cell: CellModel) => void;
 }
@@ -27,18 +37,62 @@ const emptyQuestion = {
 };
 const defaultState = {} as GameState;
 
-const useGamePlayStore = create<GamePlayStore>((set) => ({
-    state: defaultState,
-    startGame: (gridDim: GridDim) => {
-        set((store) => {
-            const tmpQuestion = generateQuestion(gridDim);
-            const questionDetails = tmpQuestion ? tmpQuestion : emptyQuestion;
-            // console.log(questionDetails);
+const useGamePlayStore = create<GamePlayStore>((set) => {
+    const timerStore = useTimerStore.getState();
 
-            const grid = generateGridAndPlaceNumbers(
-                gridDim,
-                questionDetails.allNumbers
-            );
+    const generateNewQuestion = (gridDim: GridDim) => {
+        const tmpQuestion = generateQuestion(gridDim);
+        const questionDetails = tmpQuestion ? tmpQuestion : emptyQuestion;
+        // console.log(questionDetails);
+
+        const grid = generateGridAndPlaceNumbers(gridDim, questionDetails.allNumbers);
+        return { questionDetails, grid };
+    };
+
+    const resetGameState = (gridDim: GridDim) => {
+        const { questionDetails, grid } = generateNewQuestion(gridDim);
+        set((store) => ({
+            state: {
+                questionDetails: questionDetails,
+                gridDim: gridDim,
+                isStarted: true,
+                isAnswerFound: false,
+                currentSelections: [],
+                grid: grid,
+                gameEndStatus: undefined,
+            },
+        }));
+    };
+
+    const startGame = (
+        gridDim: GridDim,
+        durationMillis: number,
+        overlayDurationMillis: number
+    ) => {
+        set((store) => {
+            const { questionDetails, grid } = generateNewQuestion(gridDim);
+            
+            const onTimeUp = () => {
+                console.log("time up called");
+                // set the game state to time up
+                set((store) => {
+                    return {
+                        state: {
+                            ...store.state,
+                            gameEndStatus: GameEndStatus.TimeUp,
+                        },
+                    };
+                });
+                
+                setTimeout(() => {
+                    // change the question just before the overlay dissapears
+                    // hence, `overlayDurationMillis * 0.8`
+                    resetGameState(gridDim);
+                    timerStore.beginTimer(durationMillis, onTimeUp);
+                }, overlayDurationMillis * 0.8);
+            };            
+
+            timerStore.beginTimer(durationMillis, onTimeUp);
 
             return {
                 state: {
@@ -52,9 +106,19 @@ const useGamePlayStore = create<GamePlayStore>((set) => ({
                 },
             };
         });
-    },
-    stopGame: () => {},
-    onCellClick: (cell: CellModel) => {
+    };
+
+    const stopGame = () => {
+        timerStore.stopTimer();
+        set({ state: defaultState });
+    };
+
+    const onCellClick = (cell: CellModel) => {
+        const isTimeUp = useTimerStore.getState().state.isTimeUp;
+        if (isTimeUp) {
+            return;
+        }
+
         set((store) => {
             if (store.state.isAnswerFound) {
                 return { state: store.state };
@@ -62,6 +126,7 @@ const useGamePlayStore = create<GamePlayStore>((set) => ({
 
             const { ri, ci } = cell.pos;
             console.log(`cell (${ri},${ci}) clicked`);
+            console.log(store.state.gameEndStatus);
 
             const maxSelectableCells = 2;
             const currentSelections = [...store.state.currentSelections];
@@ -79,12 +144,14 @@ const useGamePlayStore = create<GamePlayStore>((set) => ({
             const correctSelections =
                 store.state.questionDetails.correctSelections;
             if (checkForAnswer(currentSelections, correctSelections)) {
-                console.log('answer found');
+                console.log("answer found");
+                timerStore.stopTimer();
                 return {
                     state: {
                         ...store.state,
                         currentSelections: currentSelections,
                         isAnswerFound: true,
+                        gameEndStatus: GameEndStatus.CorrectAnswer,
                     },
                 };
             }
@@ -96,8 +163,15 @@ const useGamePlayStore = create<GamePlayStore>((set) => ({
                 },
             };
         });
-    },
-}));
+    };
+
+    return {
+        state: defaultState,
+        startGame: startGame,
+        stopGame: stopGame,
+        onCellClick: onCellClick,
+    };
+});
 
 export default useGamePlayStore;
 
@@ -105,13 +179,12 @@ const checkForAnswer = (
     currentSelectedCells: CellModel[],
     correctSelections: number[]
 ) => {
-    const currSelections = currentSelectedCells.map(c => c.num);
+    const currSelections = currentSelectedCells.map((c) => c.num);
 
     currSelections.sort();
     correctSelections.sort();
 
     return currSelections.toString() === correctSelections.toString();
-
 };
 
 const generateGrid: (dim: GridDim) => CellModel[][] = (dim: GridDim) => {

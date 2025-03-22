@@ -5,6 +5,8 @@ import TargetAndOperand from "./TargetAndOperand";
 import useGamePlayStore from "../../../state-management/gamePlayStore";
 import { useEffect } from "react";
 import NumGrid from "./NumGrid";
+import NumGridOverlay from "./NumGridOverlay";
+import TimerComponent from "./timer/TimerComponent";
 
 const placeHolder = () => {
     const navigateTo = useAppStore((s) => s.navigateTo);
@@ -27,17 +29,19 @@ const GamePlayScreen = () => {
 
     const startGame = useGamePlayStore(s => s.startGame);
     const isStarted = useGamePlayStore(s => s.state.isStarted);
-    const gridDim = useAppStore(s => s.state.config.gridDim);
+    const { gridDim, questionDurationMillis, overlayDurationMillis } = useAppStore(s => s.state.config);
 
     useEffect(() => {
-        startGame(gridDim);
+        startGame(gridDim, questionDurationMillis, overlayDurationMillis);
     }, [])
 
     return isStarted ? (
         <>
             <VStack height="100%" justifyContent="center" gap="120px">
+                <TimerComponent />
                 <TargetAndOperand />
                 <NumGrid />
+                <NumGridOverlay />
             </VStack>
         </>
     ) : "";
