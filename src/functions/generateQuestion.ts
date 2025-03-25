@@ -1,9 +1,9 @@
 import GridDim from "../models/GridDim";
-import OperatorType, { getRandomOperator } from "../models/OperatorType";
-import QuestionDetails from "../models/QuestionDetails";
+import OperatorType from "../models/OperatorType";
+import QuestionDetails, { emptyQuestion } from "../models/QuestionDetails";
 import { getDetailsForOperand } from "./getDetailsForOperand";
 
-const generateQuestion: (dim: GridDim) => QuestionDetails | undefined = (
+const generateQuestion: (dim: GridDim) => QuestionDetails = (
     dim: GridDim
 ) => {
     // const operator = getRandomOperator();
@@ -12,7 +12,7 @@ const generateQuestion: (dim: GridDim) => QuestionDetails | undefined = (
 
     if (!numsNeeded) {
         console.log(`grid doesn't have enough cells to place operands`);
-        return;
+        return emptyQuestion;
     }
     const questionDetails = getDetailsForOperand(operator, numsNeeded);
 
@@ -20,7 +20,7 @@ const generateQuestion: (dim: GridDim) => QuestionDetails | undefined = (
         questionDetails.allNumbers = [...questionDetails.correctSelections];
     }
 
-    return questionDetails;
+    return questionDetails ? questionDetails : emptyQuestion;
 };
 
 export default generateQuestion;
