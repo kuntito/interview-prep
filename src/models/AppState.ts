@@ -7,6 +7,7 @@ interface AppState {
     prevGameStat: GameStats | null;
     config: GameConfig;
     isInitialized: boolean,
+    displayCloseButton: boolean;
 }
 
 export default AppState;

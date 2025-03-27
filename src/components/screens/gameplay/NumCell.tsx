@@ -19,7 +19,10 @@ const NumCell = ({ cell }: Props) => {
     const fontSize = "20px";
 
     return (
-        <Center boxSize={"95px"} borderWidth={2}>
+        <Center
+            boxSize={"95px"}
+            // borderWidth={2}
+        >
             {cell.num ? (
                 <Center
                     boxSize={"75px"}

@@ -1,18 +1,11 @@
+import React from "react";
 import useTimerStore from "../../../../state-management/timerStore";
 import ProgressBar from "./ProgressBar";
 
-
-const TimerComponent = () => {
-
+const MemoTimer = React.memo(() => {
     const { timeLeftMillis, durationMillis } = useTimerStore((s) => s.state);
-    const isTimeUp = useTimerStore((s) => s.state.isTimeUp);
-    
-
-    const fraction = timeLeftMillis/durationMillis;
-    // console.log(fraction);
-    
-
+    const fraction = timeLeftMillis / durationMillis;
     return <ProgressBar fraction={fraction} />;
-};
+});
 
-export default TimerComponent;
+export default MemoTimer;

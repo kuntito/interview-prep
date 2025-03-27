@@ -14,10 +14,11 @@ interface AppStore {
 }
 
 const defaultState: AppState = {
-    currScreen: ScreenType.gamePlay,
+    currScreen: ScreenType.start,
     prevGameStat: null,
     config: {} as GameConfig,
     isInitialized: false,
+    displayCloseButton: false,
 };
 
 const useAppStore = create<AppStore>((set) => ({
@@ -29,6 +30,7 @@ const useAppStore = create<AppStore>((set) => ({
                     ...store.state,
                     config: config,
                     isInitialized: true,
+                    currScreen: config.startScreen
                 }
             }
         })
@@ -39,6 +41,7 @@ const useAppStore = create<AppStore>((set) => ({
                 state: {
                     ...store.state,
                     currScreen: nextScr,
+                    displayCloseButton: nextScr !== ScreenType.start
                 },
             };
         });

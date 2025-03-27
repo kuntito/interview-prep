@@ -13,7 +13,7 @@ const OverlayComp = ({ children }: Props) => {
             left="0"
             width="100vw"
             height="100vh"
-            backgroundColor="rgba(0, 0, 0, 0.5)" // Semi-transparent background
+            backgroundColor="rgba(0, 0, 0, 0.75)" // Semi-transparent background
             display="flex"
             justifyContent="center"
             alignItems="center"

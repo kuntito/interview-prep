@@ -1,6 +1,8 @@
 import GridDim from "./GridDim";
+import ScreenType from "./ScreenTypes";
 
 interface GameConfig {
+    startScreen: ScreenType;
     gridDim: GridDim;
     questionDurationMillis: number;
     overlayDurationMillis: number;

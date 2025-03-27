@@ -7,6 +7,7 @@ import NumGrid from "./NumGrid";
 import NumGridOverlay from "./NumGridOverlay";
 import TargetAndOperand from "./TargetAndOperand";
 import TimerComponent from "./timer/TimerComponent";
+import MemoTimer from "./timer/TimerComponent";
 
 const placeHolder = () => {
     const navigateTo = useAppStore((s) => s.navigateTo);
@@ -26,7 +27,7 @@ const placeHolder = () => {
 };
 
 const GamePlayScreen = () => {
-    const { setQuestions, startGame } = useGamePlayStore();
+    const { setQuestions, startGame, stopGame } = useGamePlayStore();
     const isStarted = useGamePlayStore((s) => s.state.isStarted);
     const { gridDim, questionDurationMillis, totalQuestions } = useAppStore(
         (s) => s.state.config
@@ -36,20 +37,26 @@ const GamePlayScreen = () => {
         startGame(gridDim, questionDurationMillis, totalQuestions);
     }, []);
 
+    // store.state.endStatus triggers the overlay
+    // before the overlay is dimissed, set new questions
     const beforeDismissOverlay = () => {
         setQuestions();
     };
 
-    const onGameOver = () => {};
+    const onGameOver = () => {
+        stopGame();
+    };
 
     const num = useGamePlayStore((s) => s.state.qCount);
     return isStarted ? (
         <>
             <VStack height="100%" justify="space-around" spacing={4}>
-                <VStack gap={10} width={"100%"}>
+                <VStack gap={4} width={"100%"}>
                     <Text>{num}</Text>
-                    <TimerComponent />
-                    <TargetAndOperand />
+                    <VStack gap={10} width={"100%"}>
+                        <MemoTimer />
+                        <TargetAndOperand />
+                    </VStack>
                 </VStack>
                 <NumGrid />
                 <NumGridOverlay

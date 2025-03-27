@@ -77,7 +77,7 @@ const useTimerStore = create<TimerStore>((set) => {
         },
         stopTimer: () => {
             removeTimerInterval();
-            set({state: defaultState});
+            set({ state: defaultState });
         },
     };
 });

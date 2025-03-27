@@ -21,7 +21,7 @@ export const getDetailsForOperand = (
             return getDivisionOperands(numsNeeded);
         }
         default: {
-            console.log("operator type not found");
+            console.log(`operator type not found ${op}`);
             return;
         }
     }

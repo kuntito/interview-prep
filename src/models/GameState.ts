@@ -13,16 +13,17 @@ import QuestionDetails from "./QuestionDetails";
 // it makes sense to group them together, gridInfo
 
 interface GameState {
+    isStarted: boolean;
     questionDetails: QuestionDetails;
     gridDim: GridDim;
-    questionDurationMillis: number;
-    isStarted: boolean;
-    currentSelections: CellModel[];
     grid: CellModel[][];
+    currentSelections: CellModel[];
     endStatus?: GameEndStatus;
-    score: number;
     qCount: number;
     totalQuestions: number;
+    questionDurationMillis: number;
+    score: number;
+    isLastQuestion: boolean;
 }
 
 export default GameState;

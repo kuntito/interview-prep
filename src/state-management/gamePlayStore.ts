@@ -7,6 +7,8 @@ import generateQuestion from "../functions/generateQuestion";
 import generateCellGrid from "../functions/generateCellGrid";
 import placeNumbersInGrid from "../functions/placeNumbersInGrid";
 import GameEndStatus from "../models/GameEndStatus";
+import useAppStore from "./appStore";
+import ScreenType from "../models/ScreenTypes";
 
 interface GamePlayStore {
     state: GameState;
@@ -30,14 +32,10 @@ const useGamePlayStore = create<GamePlayStore>((set) => {
         console.log("on time up called");
 
         set((store) => {
-            const { qCount, totalQuestions } = store.state;
-            const isTotalQuestionReached = qCount === totalQuestions;
             return {
                 state: {
                     ...store.state,
-                    endStatus: isTotalQuestionReached
-                        ? GameEndStatus.GameOver
-                        : GameEndStatus.TimeUp,
+                    endStatus: GameEndStatus.TimeUp,
                 },
             };
         });
@@ -61,18 +59,21 @@ const useGamePlayStore = create<GamePlayStore>((set) => {
         placeNumbersInGrid(grid, question.allNumbers);
 
         set((store) => {
+            const qCount = 1;
             return {
                 state: {
-                    ...store.state,
-                    questionDetails: question,
+                    ...defaultState,
                     isStarted: true,
-                    currentSelections: [],
-                    grid: grid,
+                    questionDetails: question,
                     gridDim: gridDim,
+                    grid: grid,
+                    currentSelections: [],
                     endStatus: undefined,
-                    qCount: 1,
+                    qCount: qCount,
                     totalQuestions: totalQuestions,
                     questionDurationMillis: durationMillis,
+                    score: 0,
+                    isLastQuestion: qCount === totalQuestions,
                 },
             };
         });
@@ -80,10 +81,7 @@ const useGamePlayStore = create<GamePlayStore>((set) => {
 
     const setQuestions = () => {
         set((store) => {
-            if (
-                !store.state.isStarted ||
-                store.state.qCount === store.state.totalQuestions
-            ) {
+            if (!store.state.isStarted || store.state.isLastQuestion ) {
                 return { state: store.state };
             }
 
@@ -100,8 +98,6 @@ const useGamePlayStore = create<GamePlayStore>((set) => {
             placeNumbersInGrid(grid, question.allNumbers);
 
             const qCount = store.state.qCount + 1;
-            const isTotalQuestionReached =
-                qCount === store.state.totalQuestions;
             // set game state
             return {
                 state: {
@@ -110,9 +106,8 @@ const useGamePlayStore = create<GamePlayStore>((set) => {
                     currentSelections: [],
                     grid: grid,
                     qCount: qCount,
-                    endStatus: isTotalQuestionReached
-                        ? GameEndStatus.GameOver
-                        : undefined,
+                    endStatus: undefined,
+                    isLastQuestion: qCount === store.state.totalQuestions
                 },
             };
         });
@@ -120,6 +115,21 @@ const useGamePlayStore = create<GamePlayStore>((set) => {
 
     const stopGame = () => {
         // stop timer
+        // need to clean up the state but retain the score
+        set((store) => {
+            console.log("stop game called");
+
+            const appStore = useAppStore.getState();
+            appStore.navigateTo(ScreenType.end);
+            appStore.updateLastGameStat({
+                questionCount: store.state.totalQuestions,
+                score: store.state.score,
+            });
+
+            return {
+                state: defaultState,
+            };
+        });
     };
 
     const onCellClick = (cell: CellModel) => {
@@ -153,11 +163,13 @@ const useGamePlayStore = create<GamePlayStore>((set) => {
             if (checkForAnswer(currentSelections, correctSelections)) {
                 console.log("answer found");
                 timerStore.stopTimer();
+
                 return {
                     state: {
                         ...store.state,
                         currentSelections: currentSelections,
                         endStatus: GameEndStatus.CorrectAnswer,
+                        score: store.state.score + 1,
                     },
                 };
             }
