@@ -47,12 +47,10 @@ const GamePlayScreen = () => {
         stopGame();
     };
 
-    const num = useGamePlayStore((s) => s.state.qCount);
     return isStarted ? (
         <>
             <VStack height="100%" justify="space-around" spacing={4}>
                 <VStack gap={4} width={"100%"}>
-                    <Text>{num}</Text>
                     <VStack gap={10} width={"100%"}>
                         <MemoTimer />
                         <TargetAndOperand />

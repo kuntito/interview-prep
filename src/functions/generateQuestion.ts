@@ -16,6 +16,7 @@ const generateQuestion: (dim: GridDim) => QuestionDetails = (
     }
     const questionDetails = getDetailsForOperand(operator, numsNeeded);
 
+    // FIXME to only display correct answers
     // if (questionDetails) {
     //     questionDetails.allNumbers = [...questionDetails.correctSelections];
     // }

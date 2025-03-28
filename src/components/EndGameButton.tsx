@@ -1,7 +1,11 @@
 import { Center, Image, Tooltip } from "@chakra-ui/react";
 import CloseIcon from "../assets/ic_close.svg";
 
-const EndGameButton = () => {
+interface Props {
+    onClose: () => void;
+}
+
+const EndGameButton = ({ onClose }: Props) => {
     return (
         <Center boxSize={"30px"}>
             {/* <Tooltip label={"end game"}> */}
@@ -12,6 +16,7 @@ const EndGameButton = () => {
                     transition="all 0.2s ease-in-out"
                     _hover={{ opacity: 1, transform: "scale(1.2)" }}
                     src={CloseIcon}
+                    onClick={onClose}
                 />
             {/* </Tooltip> */}
         </Center>

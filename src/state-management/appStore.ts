@@ -11,6 +11,7 @@ interface AppStore {
     initializeGameConfig: (config: GameConfig) => void;
     navigateTo: (nextScreen: ScreenType) => void;
     updateLastGameStat: (lastGameStats: GameStats) => void;
+    endGame: () => void;
 }
 
 const defaultState: AppState = {
@@ -19,6 +20,7 @@ const defaultState: AppState = {
     config: {} as GameConfig,
     isInitialized: false,
     displayCloseButton: false,
+    showEndDialog: false,
 };
 
 const useAppStore = create<AppStore>((set) => ({
@@ -56,6 +58,16 @@ const useAppStore = create<AppStore>((set) => ({
             };
         });
     },
+    endGame: () => {
+        // what would this do?
+        set((store) => {
+            return {
+                state: {
+                    ...store.state,
+                }
+            }
+        })
+    }
 }));
 
 export default useAppStore;

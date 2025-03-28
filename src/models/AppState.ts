@@ -8,6 +8,7 @@ interface AppState {
     config: GameConfig;
     isInitialized: boolean,
     displayCloseButton: boolean;
+    showEndDialog: boolean;
 }
 
 export default AppState;

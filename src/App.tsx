@@ -9,11 +9,9 @@ import useAppStore from "./state-management/appStore";
 const App = () => {
     const startScreen = ScreenType.start;
     const gridDim: GridDim = { rows: 3, cols: 3 };
-    const totalQuestions = 3;
-    const questionDurationMillis = ms("5000s");
-    const overlayDurationMillis = ms("3s");
-
-
+    const totalQuestions = 10;
+    const questionDurationMillis = ms("30s");
+    const overlayDurationMillis = ms("1s");
     
     const gameConfig: GameConfig = {
         startScreen: startScreen,
